@@ -1,0 +1,15 @@
+{
+  "name": "gospel_search",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "gospel_search_bg.wasm",
+    "gospel_search.js",
+    "gospel_search.d.ts"
+  ],
+  "main": "gospel_search.js",
+  "types": "gospel_search.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
