@@ -39,16 +39,46 @@ struct Verse {
     verse : u8,
 }
 
-#[derive(Clone, Debug)]
-pub struct Scripture {
-    reference : String,
+struct Scripture {
     text : String,
+    reference : String,
     link : String,
+}
+
+#[wasm_bindgen]
+#[derive(Clone)]
+pub struct SearchParams {
+    pub bom : bool,
+    pub ot : bool,
+    pub nt : bool,
+    pub dc : bool,
+    pub pogp : bool,
+    pub word : bool,
+    pub case : bool,
+}
+
+#[wasm_bindgen]
+impl SearchParams {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> SearchParams {
+        SearchParams { bom: true, ot: true, nt: true, dc: true, pogp: true, word: false, case: false }
+    }
+
+    #[wasm_bindgen]
+    pub fn copy(&self) -> SearchParams {
+        self.clone()
+    }
+
+}
+
+impl Default for SearchParams {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 
 #[wasm_bindgen]
-#[derive(Debug)]
 pub struct Gospel {
     bom : Vec<Scripture>,
     ot : Vec<Scripture>,
@@ -61,126 +91,101 @@ pub struct Gospel {
 impl Gospel {
     #[wasm_bindgen(constructor)]
     pub fn new(bom_json : String, dc_json : String, nt_json : String, ot_json : String, pogp_json : String) -> Self {
-        let bom = Gospel::convert_json_chapters(&bom_json);
-        let ot = Gospel::convert_json_chapters(&ot_json);
-        let nt = Gospel::convert_json_chapters(&nt_json);
-        let dc = Gospel::convert_json_sections(&dc_json);
-        let pogp = Gospel::convert_json_chapters(&pogp_json);   
+        let bom = Gospel::load_volume_chapters(&bom_json);
+        let ot = Gospel::load_volume_chapters(&ot_json);
+        let nt = Gospel::load_volume_chapters(&nt_json);
+        let dc = Gospel::load_volume_sections(&dc_json);
+        let pogp = Gospel::load_volume_chapters(&pogp_json);  
         Gospel { bom, ot, nt, dc, pogp }     
     }
 
-    // pub fn scriptures(&self) -> js_sys::Array {
-    //     let array = js_sys::Array::new();
-    //     for scripture in self.scriptures.iter() {
-    //         array.push(&JsValue::from(&scripture.text));
-    //     }
-    //     array
-    // }
+    pub async fn search_async(&self, text : &str, params : &SearchParams) -> JsValue {
+        let result = self.search(text, params);
+        serde_wasm_bindgen::to_value(&result).unwrap()
+    }
 
-    pub fn search(&mut self, text : String, bom : bool, ot : bool, nt : bool, dc : bool, pogp : bool, word : bool, case : bool) -> Vec<String> {
-        let mut results : Vec<String> = Vec::new();
+    pub fn search(&self, text : &str, params : &SearchParams) -> Vec<String> {
         if text.is_empty() {
-            return results
+            return Vec::<String>::new();
         }
-
-        let case_tag = match case {
+        let case_tag = match params.case {
             false => "(?i)",
             true => ""
         };
-        let re = match word {
+        let re = match params.word {
             true => Regex::new(format!("({}\\b{}\\b)",case_tag,text).as_str()).unwrap(),
             false => Regex::new(format!("({}{})",case_tag,text).as_str()).unwrap()
         };
-    
-        if bom {
-           for scripture in self.bom.iter() {
-                if re.is_match(&scripture.text) {
-                    // let escaped_text = regex::escape(&scripture.text);
-                    let tagged_text = re.replace_all(&scripture.text, "<span style=\"color: red;\">$1</span>");
-                    let formatted_text = format!("<b><a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">{}</a></b> - {}", scripture.link, scripture.reference, tagged_text);
-                    results.push(formatted_text);
-                }
+        let mut results = Vec::new();
+        if params.bom { 
+            Gospel::search_volume(&re, &self.bom, &mut results);
+        }
+        if params.ot { 
+            Gospel::search_volume(&re, &self.ot, &mut results);
+        }
+        if params.nt { 
+            Gospel::search_volume(&re, &self.nt, &mut results);
+        }
+        if params.dc { 
+            Gospel::search_volume(&re, &self.dc, &mut results);
+        }
+        if params.pogp { 
+            Gospel::search_volume(&re, &self.pogp, &mut results);
+        }
+
+        results
+
+    }
+
+    fn search_volume(re : &Regex, volume : &[Scripture], results : &mut Vec<String>) {
+        for scripture in volume {
+            if re.is_match(&scripture.text) {
+                let tagged_text = re.replace_all(&scripture.text, "<span style=\"color: red;\">$1</span>");
+                let formatted_text = format!("<b><a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">{}</a></b> - {}", 
+                    scripture.link, scripture.reference, tagged_text);
+                results.push(formatted_text);
             }
         }
-        if ot {
-           for scripture in self.ot.iter() {
-                if re.is_match(&scripture.text) {
-                    // let escaped_text = regex::escape(&scripture.text);
-                    let tagged_text = re.replace_all(&scripture.text, "<span style=\"color: red;\">$1</span>");
-                    let formatted_text = format!("<b><a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">{}</a></b> - {}", scripture.link, scripture.reference, tagged_text);
-                    results.push(formatted_text);
-                }
-            }
-        }
-        if nt {
-           for scripture in self.nt.iter() {
-                if re.is_match(&scripture.text) {
-                    // let escaped_text = regex::escape(&scripture.text);
-                    let tagged_text = re.replace_all(&scripture.text, "<span style=\"color: red;\">$1</span>");
-                    let formatted_text = format!("<b><a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">{}</a></b> - {}", scripture.link, scripture.reference, tagged_text);
-                    results.push(formatted_text);
-                }
-            }
-        }
-        if dc {
-           for scripture in self.dc.iter() {
-                if re.is_match(&scripture.text) {
-                    // let escaped_text = regex::escape(&scripture.text);
-                    let tagged_text = re.replace_all(&scripture.text, "<span style=\"color: red;\">$1</span>");
-                    let formatted_text = format!("<b><a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">{}</a></b> - {}", scripture.link, scripture.reference, tagged_text);
-                    results.push(formatted_text);
-                }
-            }
-        }
-        if pogp {
-           for scripture in self.pogp.iter() {
-                if re.is_match(&scripture.text) {
-                    // let escaped_text = regex::escape(&scripture.text);
-                    let tagged_text = re.replace_all(&scripture.text, "<span style=\"color: red;\">$1</span>");
-                    let formatted_text = format!("<b><a href=\"{}\" target=\"_blank\" rel=\"noopener noreferrer\">{}</a></b> - {}", scripture.link, scripture.reference, tagged_text);
-                    results.push(formatted_text);
+    }
+
+    fn load_volume_chapters(json : &str) -> Vec<Scripture> {
+        let mut results = Vec::new();
+        let volume = match serde_json::from_str::<VolumeChapters>(json) {
+            Ok(volume) => volume,
+            Err(_) => return results
+        };
+        for book in volume.books.iter() {
+            for chapter in book.chapters.iter() {
+                for verse in chapter.verses.iter() {
+                    let text = verse.text.clone();
+                    let reference = verse.reference.clone();
+                    let link = format!("https://www.churchofjesuschrist.org/study/scriptures/{}/{}/{}?id=p{}#p{}",
+                             volume.lds_slug, book.lds_slug, chapter.chapter, verse.verse, verse.verse);
+                    results.push(Scripture { text, reference, link });
                 }
             }
         }
         results
     }
 
-    fn convert_json_chapters(json : &str) -> Vec<Scripture> {
-        let mut result : Vec<Scripture> = Vec::new();
-        if let Ok(volume_chapters) = serde_json::from_str::<VolumeChapters>(json) {
-        
-            for book in volume_chapters.books {
-                for chapter in book.chapters {
-                    for verse in chapter.verses {
-                        // https://www.churchofjesuschrist.org/study/scriptures/ot/gen/12?lang=eng&id=p1#p1
-                        let link = format!("https://www.churchofjesuschrist.org/study/scriptures/{}/{}/{}?id=p{}#p{}",
-                            volume_chapters.lds_slug, book.lds_slug, chapter.chapter, verse.verse, verse.verse);
-                        let scripture = Scripture { reference: verse.reference, text: verse.text, link };
-                        result.push(scripture);
-                    }
-                }
+    fn load_volume_sections(json : &str) -> Vec<Scripture> {
+        let mut results = Vec::new();
+        let volume = match serde_json::from_str::<VolumeSections>(json) {
+            Ok(volume) => volume,
+            Err(_) => return results
+        };
+        for section in volume.sections.iter() {
+            for verse in section.verses.iter() {
+                let text = verse.text.clone();
+                let reference = verse.reference.clone();
+                let link = format!("https://www.churchofjesuschrist.org/study/scriptures/{}/{}?id=p{}#p{}",
+                            volume.lds_slug, section.section, verse.verse, verse.verse);
+                results.push(Scripture { text, reference, link });
             }
         }
-        result
+        results
     }
 
-    fn convert_json_sections(json : &str) -> Vec<Scripture> {
-        let mut result : Vec<Scripture> = Vec::new();
-        if let Ok(volume_sections) = serde_json::from_str::<VolumeSections>(json) {
-        
-            for section in volume_sections.sections {
-                for verse in section.verses {
-                    // https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/132?lang=eng&id=p16#p16
-                    let link = format!("https://www.churchofjesuschrist.org/study/scriptures/{}/{}?id=p{}#p{}",
-                            volume_sections.lds_slug, section.section, verse.verse, verse.verse);
-                    let scripture = Scripture { reference: verse.reference, text: verse.text, link };
-                    result.push(scripture);
-                }
-            }
-        }
-        result
-    }
 
     
 }
-
