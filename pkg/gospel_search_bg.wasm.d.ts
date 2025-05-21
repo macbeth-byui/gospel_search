@@ -1,0 +1,35 @@
+/* tslint:disable */
+/* eslint-disable */
+export const memory: WebAssembly.Memory;
+export const __wbg_searchparams_free: (a: number, b: number) => void;
+export const __wbg_get_searchparams_bom: (a: number) => number;
+export const __wbg_set_searchparams_bom: (a: number, b: number) => void;
+export const __wbg_get_searchparams_ot: (a: number) => number;
+export const __wbg_set_searchparams_ot: (a: number, b: number) => void;
+export const __wbg_get_searchparams_nt: (a: number) => number;
+export const __wbg_set_searchparams_nt: (a: number, b: number) => void;
+export const __wbg_get_searchparams_dc: (a: number) => number;
+export const __wbg_set_searchparams_dc: (a: number, b: number) => void;
+export const __wbg_get_searchparams_pogp: (a: number) => number;
+export const __wbg_set_searchparams_pogp: (a: number, b: number) => void;
+export const __wbg_get_searchparams_word: (a: number) => number;
+export const __wbg_set_searchparams_word: (a: number, b: number) => void;
+export const __wbg_get_searchparams_case: (a: number) => number;
+export const __wbg_set_searchparams_case: (a: number, b: number) => void;
+export const searchparams_new: () => number;
+export const searchparams_copy: (a: number) => number;
+export const __wbg_gospel_free: (a: number, b: number) => void;
+export const gospel_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
+export const gospel_search_async: (a: number, b: number, c: number, d: number) => any;
+export const gospel_search: (a: number, b: number, c: number, d: number) => [number, number];
+export const __wbindgen_exn_store: (a: number) => void;
+export const __externref_table_alloc: () => number;
+export const __wbindgen_export_2: WebAssembly.Table;
+export const __wbindgen_export_3: WebAssembly.Table;
+export const __wbindgen_malloc: (a: number, b: number) => number;
+export const __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+export const __externref_drop_slice: (a: number, b: number) => void;
+export const __wbindgen_free: (a: number, b: number, c: number) => void;
+export const closure32_externref_shim: (a: number, b: number, c: any) => void;
+export const closure49_externref_shim: (a: number, b: number, c: any, d: any) => void;
+export const __wbindgen_start: () => void;
