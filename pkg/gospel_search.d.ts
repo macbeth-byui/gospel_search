@@ -4,7 +4,6 @@ export class Gospel {
   free(): void;
   constructor(bom_json: string, dc_json: string, nt_json: string, ot_json: string, pogp_json: string);
   search_async(text: string, params: SearchParams): Promise<any>;
-  search(text: string, params: SearchParams): string[];
 }
 export class SearchParams {
   free(): void;
@@ -43,15 +42,12 @@ export interface InitOutput {
   readonly __wbg_gospel_free: (a: number, b: number) => void;
   readonly gospel_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => number;
   readonly gospel_search_async: (a: number, b: number, c: number, d: number) => any;
-  readonly gospel_search: (a: number, b: number, c: number, d: number) => [number, number];
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
   readonly __wbindgen_export_3: WebAssembly.Table;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-  readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly closure32_externref_shim: (a: number, b: number, c: any) => void;
   readonly closure49_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;

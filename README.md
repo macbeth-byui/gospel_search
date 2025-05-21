@@ -1,12 +1,15 @@
 ## Overview
 
 **Project Title**
+
 Gospel Search
 
 **Project Description**
+
 Search for words and phrases in the scriptures
 
 **Project Goals**
+
 Integration of Rust WASM (Web Assembly) and React
 
 ## Instructions for Build and Use
@@ -32,15 +35,27 @@ Create React Project  (Once)
 Run React Project (Repeat when WASM changes)
 * gospel_search/app: `npm start`
 
-TODO: Link to deployed version
+[https://gospel-search.onrender.com](https://gospel-search.onrender.com)
 
 ## Development Environment 
 
 To recreate the development environment, you need the following software and/or libraries with the specified versions:
 
-TODO: Add Rust dependencies
+Rust Dependencies:
+* wasm-bindgen = "0.2.100"
+* js-sys = "0.3"
+* serde = { version = "1.0", features = ["derive"] }
+* serde_json = "1.0"
+* regex = "1.11.1"
+* wasm-bindgen-futures = "0.4.50"
+* serde-wasm-bindgen = "0.6.5"
 
-TODO: Add JS dependencies
+JavaScript Dependencies:
+* "react": "^19.1.0",
+* "react-dom": "^19.1.0",
+* "react-scripts": "5.0.1",
+* "react-virtualized": "^9.22.6",
+* "wasm-gospel-search": "file:../pkg",
 
 ## Useful Websites to Learn More
 
@@ -55,5 +70,5 @@ I found these websites useful in developing this software:
 
 The following items I plan to fix, improve, and/or add to this project in the future:
 
-* [ ] Refactor the code for readability, efficiency, and documentation
-* [ ] Host on a website
+* [x] Refactor the code for readability, efficiency, and documentation
+* [x] Host on a website

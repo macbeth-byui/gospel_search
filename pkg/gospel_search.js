@@ -203,22 +203,11 @@ function _assertClass(instance, klass) {
         throw new Error(`expected instance of ${klass.name}`);
     }
 }
-
-function getArrayJsValueFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    const mem = getDataViewMemory0();
-    const result = [];
-    for (let i = ptr; i < ptr + 4 * len; i += 4) {
-        result.push(wasm.__wbindgen_export_2.get(mem.getUint32(i, true)));
-    }
-    wasm.__externref_drop_slice(ptr, len);
-    return result;
-}
 function __wbg_adapter_20(arg0, arg1, arg2) {
     wasm.closure32_externref_shim(arg0, arg1, arg2);
 }
 
-function __wbg_adapter_54(arg0, arg1, arg2, arg3) {
+function __wbg_adapter_53(arg0, arg1, arg2, arg3) {
     wasm.closure49_externref_shim(arg0, arg1, arg2, arg3);
 }
 
@@ -273,20 +262,6 @@ export class Gospel {
         _assertClass(params, SearchParams);
         const ret = wasm.gospel_search_async(this.__wbg_ptr, ptr0, len0, params.__wbg_ptr);
         return ret;
-    }
-    /**
-     * @param {string} text
-     * @param {SearchParams} params
-     * @returns {string[]}
-     */
-    search(text, params) {
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        _assertClass(params, SearchParams);
-        const ret = wasm.gospel_search(this.__wbg_ptr, ptr0, len0, params.__wbg_ptr);
-        var v2 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
-        return v2;
     }
 }
 
@@ -470,7 +445,7 @@ function __wbg_get_imports() {
                 const a = state0.a;
                 state0.a = 0;
                 try {
-                    return __wbg_adapter_54(a, state0.b, arg0, arg1);
+                    return __wbg_adapter_53(a, state0.b, arg0, arg1);
                 } finally {
                     state0.a = a;
                 }
@@ -532,7 +507,7 @@ function __wbg_get_imports() {
         const ret = false;
         return ret;
     };
-    imports.wbg.__wbindgen_closure_wrapper182 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper180 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 33, __wbg_adapter_20);
         return ret;
     };
